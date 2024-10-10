@@ -1,2 +1,4 @@
 .env
 db_creds.yaml
+notes.md
+*.pem

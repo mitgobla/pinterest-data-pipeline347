@@ -24,6 +24,15 @@ Creating a similar system to Pinterest using the AWS Cloud.
       - [Downloading Connector](#downloading-connector)
       - [Creating custom plugin](#creating-custom-plugin)
     - [Creating a connector with MSK Connect](#creating-a-connector-with-msk-connect)
+    - [Kafka REST API configuration](#kafka-rest-api-configuration)
+      - [Create a proxy integration](#create-a-proxy-integration)
+      - [Integrating the proxy resource](#integrating-the-proxy-resource)
+      - [Deploy API](#deploy-api)
+    - [Kafka REST proxy on EC2 Client](#kafka-rest-proxy-on-ec2-client)
+      - [Start Kafka REST proxy on EC2 Client](#start-kafka-rest-proxy-on-ec2-client)
+  - [Usage Instructions](#usage-instructions)
+    - [Setup Python Environment](#setup-python-environment)
+    - [Emulate data sending to API:](#emulate-data-sending-to-api)
 
 ## Setup Instructions
 
@@ -228,3 +237,81 @@ s3.bucket.name=<BucketName>
 9. Under **Access Permissions**, set the **IAM role** to your EC2 IAM Role name, which is in the format `<UserID>-ec2-access-role`
 10. Press the **Next** button, skipping until the **Review and create** page.
 11. Finally at the bottom press **Create connector**
+
+### Kafka REST API configuration
+
+#### Create a proxy integration
+
+1. In the AWS Console, navigate to **API Gateway console**
+2. Search for the API that contains your AWS User ID.
+3. Choose **Create Resource** above the resource tree panel.
+4. Enable **Proxy resource** and set the name as `{proxy+}`
+5. Enable the **CORS** checkbox too.
+6. Press **Create Resource**
+
+#### Integrating the proxy resource
+
+1. Under the `{proxy+}` resource, click on **ANY**
+2. It will say it is an Undefined Integration. Choose **Edit integration**
+3. Set the **Integration Type** to **HTTP**
+4. Enable the **HTTP proxy integration** toggle.
+5. Set **HTTP method** to **ANY**
+6. Set the **Endpoint URL** to the following, replacing <EC2PublicIPv4> with the previously noted **Public IPv4 DNS** address of your EC2 client: `http://<EC2PublicIPv4>:8082/{proxy}`
+7. Finally press **Save**
+
+#### Deploy API
+
+1. With the same API selected, press the **Deploy API** button.
+2. For **Stage**, select `dev`. If it is not present, create it first.
+3. Press **Deploy**. Once deployed make a note of the **Invoke URL**
+
+### Kafka REST proxy on EC2 Client
+
+1. On the EC2 SSH session, firstly download the Confluent package:
+
+```bash
+sudo wget https://packages.confluent.io/archive/7.2/confluent-7.2.0.tar.gz
+tar -xvzf confluent-7.2.0.tar.gz
+```
+
+2. Navigate into the extracted Confluent directory, and then into `etc/kafka-rest`
+3. Edit the `kafka-rest.properties` with `nano kafka-rest.properties`
+4. Uncomment the line `#zookeeper.connect=localhost.2181` and set `zookeeper.connect` to the previously noted **Plaintext ZooKeeper connection** string: `zookeeper.connect=<PlaintextZooKeeperString>`
+5. Set `bootstrap.servers` to the previously noted **Bootstrap Server string**: `bootstrap.servers=<BootstrapServerString>`
+6. Additionally, add the following to the configuration file at the bottom. This is for surpassing the IAM authentication of the MSK cluster. Replace `Your Access Role` with the **EC2 IAM Access Role ARN** noted earlier.
+
+```bash
+# Sets up TLS for encryption and SASL for authN.
+client.security.protocol = SASL_SSL
+
+# Identifies the SASL mechanism to use.
+client.sasl.mechanism = AWS_MSK_IAM
+
+# Binds SASL client implementation.
+client.sasl.jaas.config = software.amazon.msk.auth.iam.IAMLoginModule required awsRoleArn="Your Access Role";
+
+# Encapsulates constructing a SigV4 signature based on extracted credentials.
+# The SASL client bound by "sasl.jaas.config" invokes this class.
+client.sasl.client.callback.handler.class = software.amazon.msk.auth.iam.IAMClientCallbackHandler
+```
+
+#### Start Kafka REST proxy on EC2 Client
+
+1. Navigate into the Confluent directory from earlier, and then into the `bin` directory.
+2. Start the Kafka REST proxy with `./kafka-rest-start /home/ec2-user/confluent-7.2.0/etc/kafka-rest/kafka-rest.properties`
+
+## Usage Instructions
+
+### Setup Python Environment
+
+1. Ensure Python is installed with `python --version`. This project uses Python 3.12
+2. Create the environment with `python -m venv .venv`
+3. Activate the environment:
+   1. Windows command prompt: `.venv\Scripts\activate`
+   2. Windows PowerShell: `.venv\Scripts\Activate.ps1`
+   3. Linux/Mac: `source .venv\bin\activate`
+4. Install requirements with `pip install -r requirements.txt`
+
+### Emulate data sending to API:
+
+1. Run `python user_posting_emulation.py` to begin emulating user data being sent to the Kafka REST API.

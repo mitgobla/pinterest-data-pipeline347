@@ -1,0 +1,7 @@
+INVOKE_URL: 'https://######.execute-api.us-east-1.amazonaws.com/dev'
+HEADERS:
+  Content-Type: 'application/vnd.kafka.json.v2+json'
+TOPICS:
+  POSTS: '######.pin'
+  GEO: '######.geo'
+  USER: '######.user'

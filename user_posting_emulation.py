@@ -8,9 +8,9 @@ import sqlalchemy
 from sqlalchemy import text
 import yaml
 
+from kafka_api import KafkaAPI
 
 random.seed(100)
-
 
 class AWSDBConnector:
 
@@ -33,7 +33,7 @@ class AWSDBConnector:
 
 
 new_connector = AWSDBConnector()
-
+api = KafkaAPI()
 
 def run_infinite_post_data_loop():
     while True:
@@ -65,11 +65,10 @@ def run_infinite_post_data_loop():
             print(geo_result)
             print(user_result)
 
+            api.post_to_topic(api.topics["POSTS"], pin_result)
+            api.post_to_topic(api.topics["GEO"], geo_result)
+            api.post_to_topic(api.topics["USER"], user_result)
+
 
 if __name__ == "__main__":
     run_infinite_post_data_loop()
-    print('Working')
-
-
-
-

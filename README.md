@@ -19,6 +19,11 @@ Creating a similar system to Pinterest using the AWS Cloud.
     - [Creating Kafka Topics](#creating-kafka-topics)
       - [Retrieving MSK cluster information](#retrieving-msk-cluster-information)
       - [Creating topics](#creating-topics)
+    - [Create custom plugin with MSK Connect](#create-custom-plugin-with-msk-connect)
+      - [Find S3 Bucket](#find-s3-bucket)
+      - [Downloading Connector](#downloading-connector)
+      - [Creating custom plugin](#creating-custom-plugin)
+    - [Creating a connector with MSK Connect](#creating-a-connector-with-msk-connect)
 
 ## Setup Instructions
 
@@ -150,3 +155,76 @@ In this case, create topics with the following formats, replacing `<UserID>` wit
 - `<UserID>.pin`
 - `<UserID>.geo`
 - `<UserID>.user`
+
+### Create custom plugin with MSK Connect
+
+#### Find S3 Bucket
+
+1. On the AWS Console, navigate to **S3 Console**
+2. Search for a bucket that contains your AWS User ID. Make a note of the name of this bucket.
+
+#### Downloading Connector
+
+1. Back on the EC2 SSH session, run the following:
+
+```bash
+# assume admin user privileges
+sudo -u ec2-user -i
+# create directory where we will save our connector
+mkdir kafka-connect-s3 && cd kafka-connect-s3
+```
+
+2. Next, download the Confluent.io Amazon S3 Connector:
+```bash
+wget https://d2p6pa21dvn84.cloudfront.net/api/plugins/confluentinc/kafka-connect-s3/versions/10.5.13/confluentinc-kafka-connect-s3-10.5.13.zip
+```
+
+3. Lastly, copy the downloaded ZIP to the S3 bucket, replacing `<BucketName>` with the previously noted S3 bucket name.
+```bash
+aws s3 cp ./confluentinc-kafka-connect-s3-10.0.3.zip s3://<BucketName>/kafka-connect-s3/
+```
+
+1. On the AWS Console, navigate to the S3 Bucket noted earlier and confirm the file is uploaded under the folder `kafka-connect-s3`
+
+#### Creating custom plugin
+
+1. Navigate to the **MSK Console**
+2. On the left navigation, choose **Customised plugins** under **MSK Connect**
+3. Click **Create customised plugin**
+4. Set the **S3 URI - customised plugin object** to the path of the uploaded Confluent.io zip in your S3 bucket.
+5. Set the customised plugin name to `<UserID>-plugin` replacing `<UserID>` with your AWS User ID.
+6. Finally click the **Create customised plugin** button.
+
+### Creating a connector with MSK Connect
+
+1. In the **MSK Console**, choose **Connectors** under **MSK Connect**
+2. Choose **Create connector**
+3. Search for the previously crated custom plugin with `<UserID>-plugin` then press **Next**
+4. Set the **Connector Name** to `<UserID>-connector`
+5. Select the MSK cluster for **Apache Kafka cluster**
+6. Under **Configuration settings**, set the following, replacing `<UserID>` with your AWS User ID, and `<BucketName>` with your S3 Bucket:
+
+```conf
+connector.class=io.confluent.connect.s3.S3SinkConnector
+# Same region as our bucket and cluster
+s3.region=us-east-1
+flush.size=1
+schema.compatibility=NONE
+tasks.max=3
+# Read all data from topics starting with your User ID.
+topics.regex=<UserID>.*
+format.class=io.confluent.connect.s3.format.json.JsonFormat
+partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
+value.converter.schemas.enable=false
+value.converter=org.apache.kafka.connect.json.JsonConverter
+storage.class=io.confluent.connect.s3.storage.S3Storage
+key.converter=org.apache.kafka.connect.storage.StringConverter
+s3.bucket.name=<BucketName>
+```
+
+7. Under **Connector capacity** set **Capacity Type** to **Provisioned** and **MCU count per Worker** to `1`
+8. Under **Worker Configuration**, select **Use a customised configuration**
+   1. In the drop-down menu, choose `confluent-worker`
+9. Under **Access Permissions**, set the **IAM role** to your EC2 IAM Role name, which is in the format `<UserID>-ec2-access-role`
+10. Press the **Next** button, skipping until the **Review and create** page.
+11. Finally at the bottom press **Create connector**

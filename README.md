@@ -6,6 +6,7 @@ Creating a similar system to Pinterest using the AWS Cloud.
 
 - [Pinterest Data Pipeline](#pinterest-data-pipeline)
   - [Contents](#contents)
+  - [Project Description](#project-description)
   - [Setup Instructions](#setup-instructions)
     - [Configuring EC2 Client](#configuring-ec2-client)
       - [Saving Private Key for SSH access](#saving-private-key-for-ssh-access)
@@ -33,6 +34,12 @@ Creating a similar system to Pinterest using the AWS Cloud.
   - [Usage Instructions](#usage-instructions)
     - [Setup Python Environment](#setup-python-environment)
     - [Emulate data sending to API:](#emulate-data-sending-to-api)
+
+## Project Description
+
+This project aims to replicate an end-to-end pipeline for data processing similar to that used in Pinterest. Using AWS services like EC2, MSK, and S3, with integration into Databricks for analytics. Kafka is used for creating a system to collect streaming data, with storage in S3 and analysis in Databricks.
+
+I have learned how to configure Kafka clusters, set up secure IAM authentication for Kafka topics, and manage S3 buckets. Additionally, I have been able to gain experience in mounting S3 buckets into Databricks. This has deepened my understanding of cloud-based data streaming and given me an opportunity to use these tools hands-on to produce a project that replicates one that is used in industry.
 
 ## Setup Instructions
 

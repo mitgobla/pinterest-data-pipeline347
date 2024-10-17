@@ -6,8 +6,13 @@ Creating a similar system to Pinterest using the AWS Cloud.
   - [Project Description](#project-description)
   - [Setup Instructions](#setup-instructions)
   - [Usage Instructions](#usage-instructions)
-    - [Setup Python Environment](#setup-python-environment)
-    - [Emulate data sending to API:](#emulate-data-sending-to-api)
+    - [Sending Data to API](#sending-data-to-api)
+      - [Setup Python Environment](#setup-python-environment)
+      - [Emulate data sending to API:](#emulate-data-sending-to-api)
+    - [Cleaning \& Analysing Data](#cleaning--analysing-data)
+  - [Reflection on Project](#reflection-on-project)
+    - [Amazon Web Services](#amazon-web-services)
+    - [Databricks](#databricks)
 
 ## Project Description
 
@@ -21,7 +26,9 @@ Please read [SETUP](SETUP.md) to see extensive setup instructions.
 
 ## Usage Instructions
 
-### Setup Python Environment
+### Sending Data to API
+
+#### Setup Python Environment
 
 1. Ensure Python is installed with `python --version`. This project uses Python 3.12
 2. Create the environment with `python -m venv .venv`
@@ -31,6 +38,36 @@ Please read [SETUP](SETUP.md) to see extensive setup instructions.
    3. Linux/Mac: `source .venv\bin\activate`
 4. Install requirements with `pip install -r requirements.txt`
 
-### Emulate data sending to API:
+#### Emulate data sending to API:
 
 1. Run `python user_posting_emulation.py` to begin emulating user data being sent to the Kafka REST API.
+
+### Cleaning & Analysing Data
+
+Using Databricks notebooks, data is extracted from the S3 bucket, then put into Spark Dataframes, for transformation. After cleaning the data, analysis can be performed with queries.
+
+Inside the `databricks` folder:
+
+1. **Imports and Common Functions**: PySpark imports, grabbing AWS User ID from Databricks widget, and common functions such as creating a Dataframe from a Kafka topic.
+2. **Clean Pin Data**: Steps for transforming the data in the Pin/Posts Dataframe.
+3. **Clean Geo Data**: Steps for transforming the data in the Geo Dataframe.
+4. **Clean User Data**: Steps for transforming the data in the Users Dataframe.
+5. **Querying Data**: Various queries on the cleaned data to gather insights.
+6. **Mount S3 Bucket (Legacy)**: The previous way of mounting an S3 bucket to Databricks. Now, Databricks directly accesses the S3 bucket, rather than through its own filesystem.
+
+## Reflection on Project
+
+### Amazon Web Services
+
+> TODO
+
+1. Hands on with AWS console, EC2 instance
+2. Steps were clear, and AWS console has not changed much from the steps
+3. Accidentally tried running the wrong Confluent Kafka script, and went researching to find cause, until I realised.
+4. Creating topics, and running the Kafka REST instance, was interesting to do and be able to visualise data entering the pipeline during the user_posting_emulation code running.
+
+### Databricks
+
+One improvement I could make to my Databricks Notebook code is finding repetitive code, and creating a function from it. However, for sake of clarity of what I was performing on each step, I kept it how it is, and these transformations or queries could need to be adjusted depending on the requirements.
+
+While there is similarities to PySpark and Pandas for data transformations and cleaning, I did find I had to research into PySpark more to understand how to join statements together to get the results I wanted. Additionally, I discovered that the PySpark version on the Databricks cluster was running a few versions behind, so I looked up an alternative for finding the `median`, in this case `perentile_approx`.

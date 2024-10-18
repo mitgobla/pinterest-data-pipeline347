@@ -26,6 +26,15 @@ I have learned how to configure Kafka clusters, set up secure IAM authentication
 
 - `databricks` contains Databricks Notebook code for data transformations and queries. Each file is explained in [Cleaning & Analysing Data](#cleaning--analysing-data)
 - `airflow` contains DAG workflow for executing a Databricks Notebook.
+- Apache Kafka, AWS API Gateway
+  - `kafka_api.py` provides an interface for interacting with the MSK Cluster on AWS.
+  - `api_conf.example.yaml` is an example configuration for the `KafkaAPI` class.
+  - `user_posting_emulation.py` is used to fetch data from an RDS database, and then send the data to the MSK Cluster via `KafkaAPI`.
+- AWS Kinesis, AWS API Gateway
+  - `kinesis_api.py` provides an interface for interacting with the Kinesis Streams on AWS.
+  - `stream_api_conf.example.yaml` is an example configuration for the `KinesisAPI` class.
+  - `user_posting_emulation_streams.py` is used to fetch data from an RDS database, and then send the data to the Kinesis streams via `KinesisAPI`
+- `db_creds.example.yaml` is an example configuration for connecting to the RDS instance, used in both `user_posting_emulation.py` and `user_posting_emulation_streams.py`
 
 ## Setup Instructions
 

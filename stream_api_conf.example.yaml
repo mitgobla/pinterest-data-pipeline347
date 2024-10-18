@@ -1,0 +1,8 @@
+INVOKE_URL: 'https://#########.execute-api.us-east-1.amazonaws.com/dev'
+HEADERS:
+  Content-Type: 'application/json'
+STREAMS:
+  POSTS: 'streaming-UserId-pin'
+  GEO: 'streaming-UserId-geo'
+  USER: 'streaming-UserId-user'
+PARTITION_KEY: 'UserId'

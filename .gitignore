@@ -1,6 +1,7 @@
 .env
 db_creds.yaml
 api_conf.yaml
+stream_api_conf.yaml
 notes.md
 *.pem
 __pycache__

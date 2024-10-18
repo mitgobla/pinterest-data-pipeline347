@@ -3,4 +3,5 @@ boto3
 sqlalchemy
 pymysql
 pyyaml
-
+apache-airflow
+apache-airflow-providers-databricks

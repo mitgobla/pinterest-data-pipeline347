@@ -4,6 +4,7 @@ Creating a similar system to Pinterest using the AWS Cloud.
 
 - [Pinterest Data Pipeline](#pinterest-data-pipeline)
   - [Project Description](#project-description)
+  - [Project Structure](#project-structure)
   - [Setup Instructions](#setup-instructions)
   - [Usage Instructions](#usage-instructions)
     - [Sending Data to API](#sending-data-to-api)
@@ -13,12 +14,18 @@ Creating a similar system to Pinterest using the AWS Cloud.
   - [Reflection on Project](#reflection-on-project)
     - [Amazon Web Services](#amazon-web-services)
     - [Databricks](#databricks)
+    - [Airflow](#airflow)
 
 ## Project Description
 
 This project aims to replicate an end-to-end pipeline for data processing similar to that used in Pinterest. Using AWS services like EC2, MSK, and S3, with integration into Databricks for analytics. Kafka is used for creating a system to collect streaming data, with storage in S3 and analysis in Databricks.
 
 I have learned how to configure Kafka clusters, set up secure IAM authentication for Kafka topics, and manage S3 buckets. Additionally, I have been able to gain experience in mounting S3 buckets into Databricks. This has deepened my understanding of cloud-based data streaming and given me an opportunity to use these tools hands-on to produce a project that replicates one that is used in industry.
+
+## Project Structure
+
+- `databricks` contains Databricks Notebook code for data transformations and queries. Each file is explained in [Cleaning & Analysing Data](#cleaning--analysing-data)
+- `airflow` contains DAG workflow for executing a Databricks Notebook.
 
 ## Setup Instructions
 
@@ -71,3 +78,7 @@ Inside the `databricks` folder:
 One improvement I could make to my Databricks Notebook code is finding repetitive code, and creating a function from it. However, for sake of clarity of what I was performing on each step, I kept it how it is, and these transformations or queries could need to be adjusted depending on the requirements.
 
 While there is similarities to PySpark and Pandas for data transformations and cleaning, I did find I had to research into PySpark more to understand how to join statements together to get the results I wanted. Additionally, I discovered that the PySpark version on the Databricks cluster was running a few versions behind, so I looked up an alternative for finding the `median`, in this case `perentile_approx`.
+
+### Airflow
+
+Creating a DAG and uploading it was a trivial process, especially as there is extensive documentation on Airflow's website with numerous examples. In this case, my workflow is simple, just running one task, which executes a single Databricks Notebook. A future improvement could be to execute each notebook I created in the order I want, such as gathering data, cleaning data, and then lastly querying data. At the moment, the notebooks run dependencies on other noteobooks themselves.

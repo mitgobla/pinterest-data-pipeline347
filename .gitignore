@@ -4,3 +4,4 @@ api_conf.yaml
 notes.md
 *.pem
 __pycache__
+airflow/*_dag.py

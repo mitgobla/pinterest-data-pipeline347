@@ -21,6 +21,15 @@ class KinesisAPI:
         self._partition_key = self._conf["PARTITION_KEY"]
 
     def record_to_stream(self, stream: str, data: dict) -> requests.Response:
+        """Send a record to a Kinesis stream
+
+        Args:
+            stream (str): The stream name
+            data (dict): The data payload
+
+        Returns:
+            requests.Response: Response result from PUT call
+        """
         url = f"{self._invoke_url}/streams/{stream}/record"
         payload = json.dumps({
             "StreamName": stream,
@@ -31,6 +40,15 @@ class KinesisAPI:
         return requests.request("PUT", url, headers=self._headers, data=payload)
 
     def records_to_stream(self, stream: str, data: list[dict]) -> requests.Response:
+        """Send a batch of records to a Kinesis stream
+
+        Args:
+            stream (str): The stream name
+            data (list[dict]): An array of data payloads
+
+        Returns:
+            requests.Response: Response result from POST call
+        """
         url = f"{self._invoke_url}/streams/{stream}/records"
         records = [
             {"Data": item, "PartitionKey": self._partition_key} for item in data

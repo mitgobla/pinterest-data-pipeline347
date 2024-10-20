@@ -28,6 +28,15 @@ class KafkaAPI:
         return tuple(self.topics.keys())
 
     def post_to_topic(self, topic: str, data: dict) -> requests.Response:
+        """Send a record to a Kafka Topic
+
+        Args:
+            topic (str): The topic to send the data to
+            data (dict): Data Payload to send
+
+        Returns:
+            requests.Response: Response result from POST call.
+        """
         url = self._invoke_url + "topics/" + topic
         payload = json.dumps({
             "records": [

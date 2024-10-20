@@ -11,17 +11,6 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Load Dataframes
-# MAGIC
-# MAGIC Create User Dataframe from the JSON files in the S3 bucket.
-
-# COMMAND ----------
-
-df_user = create_topic_dataframe("user")
-
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC ## Cleaning the User Dataframe
 # MAGIC
 # MAGIC Creating a column `user_name` that concatinates the columns `first_name` and `last_name`

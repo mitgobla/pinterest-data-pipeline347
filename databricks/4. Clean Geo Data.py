@@ -11,17 +11,6 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Load Dataframe
-# MAGIC
-# MAGIC Create Geo Dataframe from the JSON files in the S3 bucket.
-
-# COMMAND ----------
-
-df_geo = create_topic_dataframe("geo")
-
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC ## Cleaning the Geo Dataframe
 # MAGIC
 # MAGIC Combine `latitude` and `longitude` columns into a single array column called `coordinates`

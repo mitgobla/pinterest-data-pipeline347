@@ -11,17 +11,6 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Load Dataframe
-# MAGIC
-# MAGIC Create Posts Dataframe from the JSON files in the S3 bucket.
-
-# COMMAND ----------
-
-df_pin = create_topic_dataframe("pin")
-
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC ## Cleaning the Posts Dataframe
 # MAGIC
 # MAGIC Posts (or "pins") schema: 

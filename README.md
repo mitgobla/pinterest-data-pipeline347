@@ -4,6 +4,7 @@ Creating a similar system to Pinterest using the AWS Cloud.
 
 - [Pinterest Data Pipeline](#pinterest-data-pipeline)
   - [Project Description](#project-description)
+    - [Architecture](#architecture)
   - [Project Structure](#project-structure)
   - [Setup Instructions](#setup-instructions)
   - [Usage Instructions](#usage-instructions)
@@ -24,6 +25,12 @@ Creating a similar system to Pinterest using the AWS Cloud.
 This project aims to replicate an end-to-end pipeline for data processing similar to that used in Pinterest. Using AWS services like EC2, MSK, and S3, with integration into Databricks for analytics. Kafka is used for creating a system to collect streaming data, with storage in S3 and analysis in Databricks.
 
 I have learned how to configure Kafka clusters, set up secure IAM authentication for Kafka topics, and manage S3 buckets. Additionally, I have been able to gain experience in mounting S3 buckets into Databricks. This has deepened my understanding of cloud-based data streaming and given me an opportunity to use these tools hands-on to produce a project that replicates one that is used in industry.
+
+### Architecture
+
+An overview of services used for this project.
+
+![Architecture Diagram](docs/architecture.png)
 
 ## Project Structure
 
@@ -92,7 +99,11 @@ Working with AWS has sigificantly improved my practical understanding of cloud c
 
 I encountered a problem when trying to run the Kafka REST script on the EC2 instance, where I had selected the wrong script to run. It was mentioning memory errors, and I thought that was strange for it to not be able to run on the provided EC2 model. After some troubleshooting I then realized I was running the wrong script, which emphasized to me to pay attention to the smaller details.
 
-Creating Kafka topics and running the REST instance was interesting, especially to see data flowing into the pipeline, providing feedback that I had implemented the processes correctly.
+Creating Kafka topics and running the REST instance was interesting, especially to see data flowing into the pipeline, providing feedback that I had implemented the processes correctly. Additionally, securing AWS service access by creating an API gateway taught me common practices for accessing resources outside of the cloud environment.
+
+| ![API Gateway breakdown](docs/gateway.png) |
+|:--:|
+| Gateway API routes used for accessing Managed Streaming for Kafka (MSK) and Kinesis Streams
 
 While certain aspects of the environment had already been setup, such as the Managed Workflows for Apache Airflow (MWAA) cluster and IAM roles, I was still able to gain insight into how these function, including the significance of IAM roles securing access and permissions, and the overall architecture of data workflows within the cloud.
 
@@ -104,13 +115,17 @@ While there is similarities to PySpark and Pandas for data transformations and c
 
 Overall, I was sucessfully able to produce analytics on the data. These kinds of queries could be used to gain valuable insights into user behaviour, identify trends over time, and support data-driven decision making. For example, one query determines which topics are most popular for each age group, which this information could be used for targeted advert campaigns.
 
-![Example query](docs/query.png)
+| ![Example query](docs/query.png) |
+|:--:|
+| Query for most popular category for each age group, and the count of that category |
 
 ### Airflow
 
 Creating a Directed Acyclic Graph (DAG) and uploading it was a trivial process, especially as there is extensive documentation on Airflow's website with numerous examples. In this case, my workflow is simple, just running one task, which executes a single Databricks Notebook. A future improvement could be to execute each notebook I created in the order I want, such as gathering data, cleaning data, and then lastly querying data. At the moment, the notebooks run dependencies on other notebooks themselves, eliminating the need for multiple tasks in the DAG.
 
-![Directed Acyclic Graph](docs/dag.png)
+| ![Directed Acyclic Graph](docs/dag.png) |
+|:--:|
+| DAG runs on a daily schedule to run query data, which successfully execute |
 
 ### Kinesis
 
@@ -120,7 +135,9 @@ I could see I needed to extract the JSON payload and then create a Dataframe fro
 
 Instead, I programmed it in such a way where I create a configuration of each of the stream, such as its name, schema, and transformation function. From this, I could loop over each one, and then perform creating the stream, running the transformation function, and lastly writing the transformed data into a Delta table. Running this code provided exciting visualisation of the incoming data and processing times of transformation, and I could confirm the data was being saved correctly in the Delta tables.
 
-![Visualisation of incoming data and processing](docs/kinesis_notebook.png)
+| ![Visualisation of incoming data and processing](docs/kinesis_notebook.png) |
+|:--:|
+| Running multiple Spark streams at once and visualising incoming and processing rates |
 
 ## License
 

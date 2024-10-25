@@ -27,7 +27,7 @@ class KafkaAPI:
         """
         return tuple(self.topics.keys())
 
-    def post_to_topic(self, topic: str, data: dict) -> requests.Response:
+    def post_to_topic(self, topic: str, data: dict) -> str:
         """Send a record to a Kafka Topic
 
         Args:
@@ -35,7 +35,7 @@ class KafkaAPI:
             data (dict): Data Payload to send
 
         Returns:
-            requests.Response: Response result from POST call.
+            str: Response result from POST call.
         """
         url = self._invoke_url + "topics/" + topic
         payload = json.dumps({
@@ -45,4 +45,9 @@ class KafkaAPI:
                 }
             ]
         }, default=str)
-        return requests.request("POST", url, headers=self._headers, data=payload)
+        try:
+            response = requests.request("POST", url, headers=self._headers, data=payload)
+            return str(response.status_code)
+        except requests.exceptions.RequestException as err:
+            return err.strerror
+

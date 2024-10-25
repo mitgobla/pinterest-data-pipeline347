@@ -1,8 +1,12 @@
 from time import sleep
+import logging
 import random
 
 from connector import AWSDBConnector
 from kinesis_api import KinesisAPI
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename="emulator_kinesis.log", filemode="w", level=logging.INFO, format="%(asctime)s [%(levelname)s] %(module)s - %(funcName)s: %(message)s")
 
 random.seed(100)
 
@@ -21,12 +25,16 @@ def run_infinite_post_data_loop():
         random_row = random.randint(0, 11000)
 
         with engine.connect() as connection:
-            pin_result = db_connector.get_pin_row(connection, random_row)
-            geo_result = db_connector.get_geo_row(connection, random_row)
-            user_result = db_connector.get_user_row(connection, random_row)
-            print("pin response:", api.record_to_stream(api.streams["POSTS"], pin_result))
-            print("geo response:", api.record_to_stream(api.streams["GEO"], geo_result))
-            print("user response:", api.record_to_stream(api.streams["USER"], user_result))
+            row_pin = db_connector.get_row(connection, "pinterest_data", random_row)
+            row_geo = db_connector.get_row(connection, "geolocation_data", random_row)
+            row_user = db_connector.get_row(connection, "user_data", random_row)
+            response_pin = api.record_to_stream(api.streams["POSTS"], row_pin)
+            response_geo = api.record_to_stream(api.streams["GEO"], row_geo)
+            response_user = api.record_to_stream(api.streams["USER"], row_user)
+
+            logging.info("Pin response: %s", response_pin)
+            logging.info("Geo response: %s", response_geo)
+            logging.info("User response: %s", response_user)
 
 
 if __name__ == "__main__":
